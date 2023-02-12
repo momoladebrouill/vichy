@@ -1,0 +1,4 @@
+(executable
+ (public_name vichy)
+ (name main)
+ (libraries vichy))
