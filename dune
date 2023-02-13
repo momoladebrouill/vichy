@@ -1,4 +1,0 @@
-(executable
-  (name vichy)
-  (libraries raylib)
-  )
