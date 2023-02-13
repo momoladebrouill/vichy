@@ -1,8 +1,0 @@
-lib: [
-  "_build/install/default/lib/vichy/META"
-  "_build/install/default/lib/vichy/dune-package"
-  "_build/install/default/lib/vichy/opam"
-]
-bin: [
-  "_build/install/default/bin/vichy"
-]

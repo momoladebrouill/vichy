@@ -1,5 +1,0 @@
-# dune init proj vichy
-# OCAMLPARAM: unset
-# Shared cache: disabled
-# Workspace root: /home/rayou/mp2i/JEUINFO
-# Auto-detected concurrency: 4
