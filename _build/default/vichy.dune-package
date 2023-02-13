@@ -1,0 +1,4 @@
+(lang dune 3.6)
+(name vichy)
+(sections (lib .) (bin ../../bin) (doc ../../doc/vichy))
+(files (lib (META dune-package opam)) (bin (vichy)) (doc (README.md)))
