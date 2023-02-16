@@ -40,7 +40,7 @@ let generate_tower n =
 let generate_towers () =
   let rec gen acc i =
     if i = 0 then acc
-    else gen ({top = generate_tower 4; index = i-1}::acc) (i-1)
+    else gen ({top = generate_tower ((Random.int 2) * 4); index = i-1}::acc) (i-1)
   in gen [] 9
 
 let towerPos i = 
@@ -50,6 +50,7 @@ let setup () =
   (* obligé par vim ???*)
   Raylib.init_window w h "Vichy";
   Raylib.set_target_fps 60;
+  Random.self_init ();
   { 
     towers = generate_towers ();
     hold = Null;
