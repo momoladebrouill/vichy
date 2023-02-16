@@ -1,8 +1,8 @@
-let w = 750
-let h = 500
+let w = 950
+let h = 700
 
-let slabWidth = 10
-let slabHeight = 14
+let slabWidth = 20
+let slabHeight = 22
 
 type slab = 
     Null 
@@ -17,7 +17,8 @@ type gamestate = {
   towers : tower list;
   hold: slab;
   current : int;
-  prevKeys : (bool*bool*bool*bool*bool)
+  prevKeys : (bool*bool*bool*bool*bool);
+  time : int;
 }
 
 let colors = [|
@@ -56,6 +57,7 @@ let setup () =
     hold = Null;
     current = 0; 
     prevKeys = (false, false, false, false, false);
+    time = 0;
   }
 
 let draw_slab x y b =
@@ -107,6 +109,7 @@ let rec loop gamestate =
 
     end_drawing ();
 
+    let spawn = if gamestate.time mod 360 = 0 then Random.int 9 else -1 in
 
     let up , right, down, left, space = gamestate.prevKeys in
 
@@ -138,7 +141,14 @@ let rec loop gamestate =
     in
 
     let hold = first_not_none (List.map (fun (_, hold) -> hold) towershold) gamestate.hold in
-    let towers = List.map (fun (tow, _) -> if checkwin tow then {top = Null; index = tow.index} else tow) towershold in
+    let towers = List.map (fun (tow, _) ->
+      if checkwin tow then 
+        {top = Null; index = tow.index} 
+      else if tow.index = spawn then 
+        {top = Slab {size = Random.int 4 + 1; next = tow.top; color = random_color () }; index = tow.index}
+      else 
+        tow
+    ) towershold in
 
     
     let gamestate' = { 
@@ -146,6 +156,7 @@ let rec loop gamestate =
       current = current;
       prevKeys = (is_key_down Key.Up, is_key_down Key.Right, is_key_down Key.Down, is_key_down Key.Left, is_key_down Key.Space);
       hold = hold;
+      time = gamestate.time + 1;
     } in
     loop gamestate'
 
