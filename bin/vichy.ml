@@ -20,13 +20,20 @@ type gamestate = {
   prevKeys : (bool*bool*bool*bool*bool)
 }
 
-let random_color h =
-    Raylib.color_from_hsv (h*.360.) 1. 1.
+let colors = [|
+  Raylib.color_from_hsv 360. 1. 1.;
+  Raylib.color_from_hsv 270. 1. 1.;
+  Raylib.color_from_hsv 180. 1. 1.;
+  Raylib.color_from_hsv 90. 1. 1.;
+|]
+
+let random_color () =
+    colors.(Random.int 4)
 
 let generate_tower n =
   let rec gen acc i =
     if i = 0 then acc
-    else gen (Slab {size = i; next = acc; color = random_color ((float_of_int i)/.(float_of_int n))} ) (i-1)
+    else gen (Slab {size = i; next = acc; color = random_color () } ) (i-1)
   in
   gen Null n
 
