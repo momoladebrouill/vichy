@@ -20,24 +20,20 @@ type gamestate = {
   prevKeys : (bool*bool*bool*bool*bool)
 }
 
-let random_color () =
-  match (Random.int 3) with 
-  | 0 -> Raylib.Color.red 
-  | 1 -> Raylib.Color.blue 
-  | 2 -> Raylib.Color.green 
-  | _ -> failwith "arthur palla : c'est super bizarre si ça bug ici"
+let random_color h =
+    Raylib.color_from_hsv (h*.360.) 1. 1.
 
 let generate_tower n =
   let rec gen acc i =
     if i = 0 then acc
-    else gen (Slab {size = i; next = acc; color = random_color ()} ) (i-1)
+    else gen (Slab {size = i; next = acc; color = random_color ((float_of_int i)/.(float_of_int n))} ) (i-1)
   in
   gen Null n
 
 let generate_towers () =
   let rec gen acc i =
     if i = 0 then acc
-    else gen ({top = generate_tower 3; index = i-1}::acc) (i-1)
+    else gen ({top = generate_tower 4; index = i-1}::acc) (i-1)
   in gen [] 9
 
 let towerPos i = 
@@ -82,13 +78,13 @@ let rec loop gamestate =
     let open Raylib in
     begin_drawing ();
     clear_background Color.black;
-    draw_slab (w/2) (3*h/4) gamestate.hold;
+    draw_slab (w/2) (7*h/8) gamestate.hold;
     List.iteri (fun i tow-> 
         let x, y = towerPos i in
         draw_rectangle 
           (x-slabWidth + 3) (y-slabHeight*6) 
           ((slabWidth - 3)*2) (slabHeight*6) 
-          (if gamestate.current = tow.index then Color.yellow else Color.raywhite);
+          (if gamestate.current = tow.index then Color.gray else Color.raywhite);
         draw_tower tow.top x y; 
       ) gamestate.towers;
 
