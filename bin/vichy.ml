@@ -79,7 +79,16 @@ let rec first_not_none l default =
     |None -> first_not_none q default 
     |Some s -> s 
 
+let checkwin tow =
+  let rec aux top last =
+    match top, last with
+    | (Null, Null) -> false
+    | (Slab a, Null) -> a.size = 1 && aux a.next (Slab a)
+    | (Null, Slab b) -> b.size = 4
+    | (Slab a, Slab b) -> (a.size = b.size + 1 && b.color = a.color) && aux a.next (Slab a)
+  in aux tow.top Null
 
+ 
 let rec loop gamestate =
   if Raylib.window_should_close () then Raylib.close_window () else
 
@@ -92,7 +101,7 @@ let rec loop gamestate =
         draw_rectangle 
           (x-slabWidth + 3) (y-slabHeight*6) 
           ((slabWidth - 3)*2) (slabHeight*6) 
-          (if gamestate.current = tow.index then Color.gray else Color.raywhite);
+          (if gamestate.current = tow.index then Color.raywhite else Color.gray);
         draw_tower tow.top x y; 
       ) gamestate.towers;
 
@@ -117,9 +126,9 @@ let rec loop gamestate =
       List.map (fun tow -> 
           if is_key_down Key.Space && not space && (current = tow.index) then 
             match gamestate.hold with
-            | Null -> ({top = (match tow.top with Null -> Null | Slab b -> b.next); index = tow.index},Some tow.top)
+            | Null -> ({top = (match tow.top with Null -> Null | Slab b -> b.next); index = tow.index}, Some tow.top)
             | Slab b -> match tow.top with
-                | Null -> ({top = Slab {size = b.size ; next = tow.top ; color = b.color}; index = tow.index},Some Null)
+                | Null -> ({top = Slab {size = b.size; next = tow.top; color = b.color}; index = tow.index}, Some Null)
                 | Slab c -> if b.size > c.size then 
                   (tow, None) 
                 else 
@@ -128,11 +137,15 @@ let rec loop gamestate =
         ) gamestate.towers 
     in
 
+    let hold = first_not_none (List.map (fun (_, hold) -> hold) towershold) gamestate.hold in
+    let towers = List.map (fun (tow, _) -> if checkwin tow then {top = Null; index = tow.index} else tow) towershold in
+
+    
     let gamestate' = { 
-      towers = List.map (fun (tow,_) -> tow) towershold;
+      towers = towers;
       current = current;
       prevKeys = (is_key_down Key.Up, is_key_down Key.Right, is_key_down Key.Down, is_key_down Key.Left, is_key_down Key.Space);
-      hold = first_not_none (List.map (fun (_,hold) -> hold) towershold) gamestate.hold;
+      hold = hold;
     } in
     loop gamestate'
 
