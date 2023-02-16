@@ -6,7 +6,7 @@ let slabHeight = 14
 
 type slab = 
     Null 
-    | Slab of {size: int; next: slab; color: Raylib.Color.t }
+  | Slab of {size: int; next: slab; color: Raylib.Color.t }
 
 type tower = { 
   top : slab;
@@ -55,25 +55,25 @@ let setup () =
   }
 
 let draw_slab x y b =
-      match b with
-      Null -> ()
+  match b with
+    Null -> ()
   | Slab b ->
-      Raylib.draw_rectangle (x - b.size * slabWidth) y (b.size * slabWidth * 2) slabHeight b.color 
+    Raylib.draw_rectangle (x - b.size * slabWidth) y (b.size * slabWidth * 2) slabHeight b.color 
 
 let draw_tower top x y =
   let rec aux t x y = 
     match t with
     | Null -> y
     | Slab b -> let ny = (aux b.next x y) - slabHeight in draw_slab x ny (Slab b); ny
-      (* Mon reuf ?? très sus *)
+    (* Mon reuf ?? très sus *)
   in let _ = aux top x y in ()
 
 let rec first_not_none l default =
-    match l with
+  match l with
     [] -> default
-    | t::q -> match t with 
-      |None -> first_not_none q default 
-      |Some s -> s 
+  | t::q -> match t with 
+    |None -> first_not_none q default 
+    |Some s -> s 
 
 
 let rec loop gamestate =
@@ -99,14 +99,14 @@ let rec loop gamestate =
 
     let current = 
       (if is_key_down Key.Left && not left then 
-        (((gamestate.current - 1) mod 9) + 9)
-      else if is_key_down Key.Right && not right then 
-        (gamestate.current + 1) 
-      else if is_key_down Key.Down && not down then
+         (((gamestate.current - 1) mod 9) + 9)
+       else if is_key_down Key.Right && not right then 
+         (gamestate.current + 1) 
+       else if is_key_down Key.Down && not down then
          (gamestate.current +3)
-      else if is_key_down Key.Up && not up then
+       else if is_key_down Key.Up && not up then
          (((gamestate.current - 3)mod 9) +9)
-      else gamestate.current) mod 9
+       else gamestate.current) mod 9
     in
 
     let towershold = 
