@@ -110,7 +110,12 @@ let rec loop gamestate =
           if is_key_down Key.Space && not space && (current = tow.index) then 
             match gamestate.hold with
             | Null -> ({top = (match tow.top with Null -> Null | Slab b -> b.next); index = tow.index},Some tow.top)
-            | Slab b -> ({top = Slab {size = b.size ; next = tow.top ; color = b.color}; index = tow.index},Some Null)
+            | Slab b -> match tow.top with
+                | Null -> ({top = Slab {size = b.size ; next = tow.top ; color = b.color}; index = tow.index},Some Null)
+                | Slab c -> if b.size > c.size then 
+                  (tow, None) 
+                else 
+                  ({top = Slab {size = b.size ; next = tow.top ; color = b.color}; index = tow.index},Some Null)
           else (tow,None)
         ) gamestate.towers 
     in
