@@ -37,7 +37,7 @@ let generate_towers () =
   in gen [] 9
 
 let towerPos i = 
-  ( (1 + (i mod 3)) * w / 4, (1 + (i / 3)) * h / 4)
+  ( (1 + (i mod 3)) * w / 4, (1 + (i / 3)) * h / 4 + h / 8)
 
 let setup () =
   (* obligé par vim ???*)
@@ -78,7 +78,7 @@ let rec loop gamestate =
     let open Raylib in
     begin_drawing ();
     clear_background Color.black;
-    draw_slab (w/2) (7*h/8) gamestate.hold;
+    draw_slab (w/2) (h/9) gamestate.hold;
     List.iteri (fun i tow-> 
         let x, y = towerPos i in
         draw_rectangle 
