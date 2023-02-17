@@ -2,8 +2,8 @@ let w = 500
 let h = 500
 let size = 50
 let qqty = 10
-type player  = {pos:int*int}
-type box = {pos:int*int;ind : int}
+type player  = {pos: int*int}
+type box = {pos: int*int; ind: int}
 type obj = Player of player | Box of box
 
 type gamestate = {
@@ -15,16 +15,16 @@ type gamestate = {
 
 let rec generate n =
   if n = 0 then []
-  else (Box {pos=((Random.int 10)-5,(Random.int 10)-5);ind = n})::(generate (n-1))
+  else (Box {pos = ((Random.int 10) - 5, (Random.int 10) - 5); ind = n})::(generate (n-1))
 
 let setup () =
   Raylib.init_window w h "Vichy";
   Raylib.set_target_fps 60;
   {
-    player =  {pos=(0,0)};
+    player =  {pos = (0, 0)};
     objects = generate qqty;
-    prevkeys = (false,false,false,false);
-    camera = (0,0);
+    prevkeys = (false, false, false, false);
+    camera = (0, 0);
   }
 
 let get_pos obj =
@@ -35,18 +35,18 @@ let get_pos obj =
 let ($+) a b =
   let xa,ya = a in
   let xb,yb = b in
-  (xa+xb,ya+yb)
+  (xa + xb, ya + yb)
 
 let ($=) a b =
-  let xa,ya = a in
-  let xb,yb = b in
-  xa=xb && ya=yb
+  let xa, ya = a in
+  let xb, yb = b in
+  xa = xb && ya = yb
 
-let ($*) pos q = let x,y = pos in (x*q,y*q)
+let ($*) pos q = let x, y = pos in (x * q, y * q)
 
-let shifted_of_absolute pos cam = (pos $* size) $+ (w/2,h/2) $+ (cam $* -1) 
+let shifted_of_absolute pos cam = (pos $* size) $+ (w / 2, h / 2) $+ (cam $* -1) 
 
-let  rec find_at pos objs=
+let rec find_at pos objs=
   match objs with
   | [] -> None
   | t::q -> if (get_pos t) $= pos then Some t else find_at pos q
@@ -54,7 +54,7 @@ let  rec find_at pos objs=
 let force_move obj dir =
   match obj with
   | Player p -> Player {pos = p.pos $+ dir}
-  | Box b -> Box {pos = b.pos $+ dir;ind=b.ind}
+  | Box b -> Box {pos = b.pos $+ dir; ind = b.ind}
 
 let rec move obj dir objs =
   match find_at ((get_pos obj) $+ dir) objs with
@@ -71,7 +71,7 @@ let rec find_with_ind i objs =
 let rec concat nobjs objs i =
   if i=0 then [] else
     (match find_with_ind i nobjs with
-       None -> (match find_with_ind i objs with None -> failwith "lost forever"  | Some o -> o)
+       None -> (match find_with_ind i objs with None -> failwith "lost forever" | Some o -> o)
      | Some o -> o)::(concat nobjs objs (i-1))
 
 let rec loop gamestate =
@@ -84,7 +84,7 @@ let rec loop gamestate =
         match obj with
         | Player p -> let x,y = shifted_of_absolute p.pos gamestate.camera in draw_rectangle x y size size Color.raywhite
         | Box b -> let x,y = shifted_of_absolute b.pos gamestate.camera in  draw_rectangle x y size size
-            (color_from_hsv ((float_of_int (b.ind*360))/.(float_of_int qqty)) 0.7 1.);
+            (color_from_hsv ((float_of_int (b.ind*360)) /. (float_of_int qqty)) 0.7 1.);
           draw_text (string_of_int b.ind) x y 20 Color.raywhite;
       ) ((Player gamestate.player)::gamestate.objects);
 
@@ -101,10 +101,10 @@ let rec loop gamestate =
       else ((Player gamestate.player)::gamestate.objects))
     in
     let player = match List.hd mobjects with Player p -> {pos = p.pos} | _ -> gamestate.player in
-    let camera = let (xc,yc),(xp,yp) = gamestate.camera,gamestate.player.pos in (xc+(xp*size-xc)/7,yc+(yp*size-yc)/7) in
+    let camera = let (xc, yc), (xp, yp) = gamestate.camera, gamestate.player.pos in (xc + (xp * size - xc) / 7, yc + (yp * size - yc) / 7) in
     let gamestate' = {
       objects = concat (List.tl mobjects) objects qqty;
-      prevkeys = (nw,na,ns,nd);
+      prevkeys = (nw, na, ns, nd);
       player = player; 
       camera = camera;
     }
