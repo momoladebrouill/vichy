@@ -1,26 +1,30 @@
 let w = 500
 let h = 500
 let size = 50
-type player = { pos : int*int}
-type box = { pos : int*int}
-type obj =  Player of player | Box of box | Wall of box
+let qqty = 2
+type player  = {pos:int*int}
+type box = {pos:int*int;ind : int}
+type obj = Player of player | Box of box
 
 type gamestate = {
     objects : obj list;
-    prevkeys : (bool*bool*bool*bool)
+    prevkeys : (bool*bool*bool*bool);
+    player : player;
 }
 
 let setup () =
     Raylib.init_window w h "Vichy";
     Raylib.set_target_fps 60;
     {
-        objects = [Player {pos = (w/2,h/2)};Box {pos=(w/2-size,h/2-size)}; Wall {pos=(w/2-3*size,h/2-3*size)}];
+        player =  {pos=(w/2,h/2)};
+        objects = [
+            Box {pos=(w/2-size,h/2-size);ind=1};
+            Box {pos=(w/2+size,h/2+size);ind=2}];
         prevkeys = (false,false,false,false);
         }
 let get_pos obj =
     match obj with
     | Player p -> p.pos
-    | Wall o -> o.pos
     | Box o -> o.pos
 
 let ($+) a b =
@@ -38,16 +42,28 @@ let  rec find_at pos objs=
     | [] -> None
     | t::q -> if (get_pos t) $= pos then Some t else find_at pos q
 
-let  rec can_i_move obj dir objs =
-    match (find_at ((get_pos obj) $+ dir) objs) with
-    | None -> true
-    | Some x -> match x with 
-      | Wall _ -> false
-      | x -> can_i_move x dir objs
+let force_move obj dir =
+    match obj with
+    | Player p -> Player {pos = p.pos $+ dir}
+    | Box b -> Box {pos = b.pos $+ dir;ind=b.ind}
 
-let move obj dir objs =
-    if can_i_move obj dir objs then get_pos obj else (get_pos obj) $+ dir
+let rec move obj dir objs =
+    match find_at ((get_pos obj) $+ dir) objs with
+    | None -> [force_move obj dir]
+    | Some o -> (force_move obj dir)::(move o dir objs)
    
+let rec find_with_ind i objs =
+    match objs with
+    [] -> None
+    | t::q -> match t with 
+    |Player _ -> find_with_ind i q
+    |Box t -> if t.ind = i then Some (Box t) else find_with_ind i q
+
+let rec concat nobjs objs i =
+    if i=0 then [] else
+    (match find_with_ind i nobjs with
+    None -> (match find_with_ind i objs with None -> failwith "lost forever"  | Some o -> o)
+    | Some o -> o)::(concat nobjs objs (i-1))
 
 let rec loop gamestate =
     if Raylib.window_should_close () then Raylib.close_window ()
@@ -58,27 +74,28 @@ let rec loop gamestate =
 
         List.iter (fun obj -> 
             match obj with
-            Player p ->  let x,y = p.pos in draw_rectangle x y size size Color.raywhite
+            | Player p -> let x,y = p.pos in draw_rectangle x y size size Color.white
             | Box b -> let x,y = b.pos  in  draw_rectangle x y size size Color.red   
-            | Wall b -> let x,y = b.pos  in  draw_rectangle x y size size Color.gray  
-        ) gamestate.objects;
+        ) ((Player gamestate.player)::gamestate.objects);
 
         end_drawing ();
-    let couilles = gamestate.objects in
+
     let w,a,s,d = gamestate.prevkeys in
     let nw, na, ns, nd = (is_key_down Key.W,is_key_down Key.A,is_key_down Key.S,is_key_down Key.D) in
-    loop {
-        objects = (List.map (fun obj ->
-            match obj with
-                |Player p -> let x,y = p.pos in 
-                if nw && not w && can_i_move obj (0,-size) couilles then Player {pos=(x,y-size)} 
-                else if na && not a && can_i_move obj (-size,0) couilles then Player {pos=(x-size,y)} 
-                else if ns && not s && can_i_move obj (0,size) couilles then Player {pos=(x,y+size)} 
-                else if nd && not d && can_i_move obj (size,0) couilles then Player {pos=(x+size,y)} 
-                else Player p
-                | Box b -> Box b
-                | Wall w -> Wall w) 
-        gamestate.objects);
-        prevkeys = (nw,na,ns,nd) 
-                }
+    let objects = gamestate.objects in
+    let nobjects = (
+                if nw && not w then (move (Player gamestate.player) (0,-size) objects)
+                else if na && not a then (move (Player gamestate.player) (-size,0) objects)
+                else if ns && not s then (move (Player gamestate.player) (0,size) objects)
+                else if nd && not d then (move (Player gamestate.player) (size,0) objects)
+                else ((Player gamestate.player)::gamestate.objects))
+    in
+    let player = match List.hd nobjects with Player p -> {pos = p.pos} | _ -> gamestate.player in
+    
+    let gamestate' = {
+        objects = concat (List.tl nobjects) objects qqty;
+        prevkeys = (nw,na,ns,nd);
+        player = player; 
+    }
+    in loop gamestate'
 let ophelie () = loop (setup ())

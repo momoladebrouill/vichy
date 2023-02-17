@@ -1,5 +1,5 @@
 let () =
     (* Uncomment someone to play with, sale shrub*)
-    (*Ophelie.ophelie ();*)
+    Ophelie.ophelie ();
     (*Lilian.lilian ();*)
-    Vichy.vichy ();
+    (*Vichy.vichy ();*)
