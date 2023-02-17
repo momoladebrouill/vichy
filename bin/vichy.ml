@@ -19,6 +19,7 @@ type gamestate = {
   current : int;
   prevKeys : (bool*bool*bool*bool*bool);
   time : int;
+  nextslab : (int*Raylib.Color.t)
 }
 
 let colors = [|
@@ -58,6 +59,7 @@ let setup () =
     current = 0; 
     prevKeys = (false, false, false, false, false);
     time = 0;
+    nextslab = (1,random_color ());
   }
 
 let draw_slab x y b =
@@ -97,7 +99,14 @@ let rec loop gamestate =
     let open Raylib in
     begin_drawing ();
     clear_background Color.black;
+    let mess = "In yours hands:" in 
+    draw_text mess (w/2-(measure_text mess 24)/2) (h/18) 24 Color.raywhite;
     draw_slab (w/2) (h/9) gamestate.hold;
+    let mess = ("Next to arrive:"^(Printf.sprintf "%02d" ((360-(gamestate.time mod 360))/10))) in 
+    draw_text mess 0 (h/18) 20 Color.raywhite;
+    draw_slab ((measure_text mess 20)/2) (h/9) (let s,c=gamestate.nextslab in Slab {color=c;size=s;next=Null});
+
+
     List.iteri (fun i tow-> 
         let x, y = towerPos i in
         draw_rectangle 
@@ -145,7 +154,7 @@ let rec loop gamestate =
       if checkwin tow then 
         {top = Null; index = tow.index} 
       else if tow.index = spawn then 
-        {top = Slab {size = Random.int 4 + 1; next = tow.top; color = random_color () }; index = tow.index}
+        {top = (let s,c = gamestate.nextslab in Slab {size = s; next = tow.top; color = c }); index = tow.index}
       else 
         tow
     ) towershold in
@@ -157,6 +166,7 @@ let rec loop gamestate =
       prevKeys = (is_key_down Key.Up, is_key_down Key.Right, is_key_down Key.Down, is_key_down Key.Left, is_key_down Key.Space);
       hold = hold;
       time = gamestate.time + 1;
+      nextslab = if gamestate.time mod 360 = 0 then (Random.int 4 + 1, random_color ()) else gamestate.nextslab;
     } in
     loop gamestate'
 
