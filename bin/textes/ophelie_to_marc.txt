@@ -1,0 +1,22 @@
+Encore un défi gagné ?
+Celui-ci n'était pas aisé
+Mais, après tout, un coup de chance est très vite arrivé.
+[ENTER]
+Un nouveau maître arrive ...
+[ENTER]
+Un certain Damiens ...
+[ENTER]
+Eh bien non rien,
+Il est reparti
+[ENTER]
+Voici donc un dernier défi,
+Celui de maitre Marc,
+Il sera compliqué, alors prenez vos marques :
+Vous avez à votre disposition 9 tours de Hanoï
+Mais, à intervalles régulières, 
+De nouvelles briques tombent tel une langue d'Oïl,
+Sur une tour choisie sans raison particulière.
+Votre but est donc d'organiser ces dernières 
+Afin de ne jamais tomber sur un stack overflow, 
+Car vous y perderez votre philo...
+[ENTER]
