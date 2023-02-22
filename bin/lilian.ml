@@ -1,61 +1,58 @@
 let w = 500
 let h = 500
-let size = 50
-type player = { pos : int*int}
-type box = { pos : int*int; speed:int}
-type obj =  Player of player |  Wall of box 
+let size = 10.
+let speed = 3
+let qqty = 100
+let repulse_ray = 2500.
+let id_ray = 5000.
+let show_ray = 20000.
+type boul = {pos :int*int; dir:int*int} 
+type obj = 
+    Player of boul
+    | Bad of boul 
+    | Good of boul
 
 type gamestate = {
-    objects : obj list;
-    prevkeys : (bool*bool*bool*bool);
+    bads : obj list;
+    player :  boul;
+    good : boul;
+    prevkeys : (int*int*int*int);
     time : int;
-}
-(*
-let gen_walls x' y' =
-    let rec aux x y acc =
-        (if x=y && x=0 then (fun a->a)
-        else if x=0 then aux x' (y-1)
-        else aux (x-1) y) (if Random.int 2 = 1 then acc else (Wall {pos=(1+x,y)})::acc) in
-    aux x' y' []
-*)
-let rec gen_walls x acc =
-    if x = 0 then acc else
-        gen_walls (x-1) (if x mod 2 = 0 then acc else (Wall {pos=(x,0);speed=Random.int 4})::acc)
+ }
+
+let gen_p () = {pos=((Random.int 20) * w/20,(Random.int 20) * h/20); dir=List.nth [(-1,0);(1,0);(0,-1);(0,1)] (Random.int 3);} 
+
 let setup () =
     Raylib.init_window w h "Vichy";
     Raylib.set_target_fps 60;
+    Random.self_init ();
     {
-        objects = gen_walls (w/size-2) [Player {pos = (0,0)}];
-        prevkeys = (false,false,false,false);
+        player = {pos = (0,0); dir = (0,0)};
+        good = (gen_p ());
+        bads = List.init 100 (fun _ -> Bad (gen_p ()));
+        prevkeys = (0,0,0,0);
         time = 0;
         }
 
-let get_pos obj =
-    match obj with
-    | Player p -> p.pos
-    | Wall o -> o.pos
 
 let ($+) a b =
     let xa,ya = a in
     let xb,yb = b in
-    (xa+xb,ya+yb)
+    ( (abs (xa+xb+w) ) mod w,(abs (ya+yb+h)) mod h)
+let ($*) a b =
+    let x,y= a in (x*b,y*b)
 
-let ($=) a b =
-    let xa,ya = a in
-    let xb,yb = b in
-    xa=xb && ya=yb
-let ($*) pos q = let x,y = pos in (x*q,y*q)
+let dist a b =
+    let (x,y),(x',y') =  a.pos, b.pos in 
+    (float_of_int (x-x'))**2. +. (float_of_int (y-y'))**2.
 
-let  rec find_at pos objs=
-    match objs with
-    | [] -> None
-    | t::q -> if (get_pos t) $= pos then Some t else find_at pos q
+let int_of_bool b=
+    if b then 1 else 0
 
-let can_i_move obj dir objs =
-    match (find_at ((get_pos obj) $+ dir) objs) with
-    | None -> true
-    | Some _ -> false
-
+let repulse b player =
+    if dist b player > repulse_ray  then (0,0) else
+    let (x,y),(xp,yp) =  b.pos, player.pos in
+     (if x-xp<0 then -1 else 1), (if y-yp<0 then -1 else 1)
 
 let rec loop gamestate =
     if Raylib.window_should_close () then Raylib.close_window ()
@@ -63,29 +60,34 @@ let rec loop gamestate =
         let open Raylib in
         begin_drawing ();
         clear_background Color.black;
-
+        let objects = (Player gamestate.player)::(Good gamestate.good)::gamestate.bads in
+        let player = gamestate.player in
+        let good = gamestate.good in
         List.iter (fun obj -> 
             match obj with
-            Player p ->  let x,y = p.pos $* size in draw_rectangle x y size size Color.raywhite
-            | Wall b -> let x,y = b.pos $* size in  draw_rectangle x y size size Color.gray  
-        ) gamestate.objects;
+            Player p ->  let x,y = p.pos in draw_rectangle x y 10 10 Color.orange
+            | Bad b -> let x,y = b.pos in  draw_circle x y size 
+              (let d  = dist player b in if d < id_ray then Color.red 
+              else if d < show_ray then Color.white else Color.black) 
+            | Good b -> let x,y = b.pos in draw_circle x y size 
+              (let d  = dist player b in if d < id_ray then Color.green 
+              else if d < show_ray then Color.green else Color.black) 
+    ) objects;
 
         end_drawing ();
-    let couilles = gamestate.objects in
-    let w,a,s,d = gamestate.prevkeys in
-    let nw, na, ns, nd = (is_key_down Key.W,is_key_down Key.A,is_key_down Key.S,is_key_down Key.D) in
-    loop {
-        objects = List.map (fun obj ->
-            match obj with
-                |Player p -> let x,y = p.pos in 
-                if nw && not w && can_i_move obj (0,-1) couilles then Player {pos=(x,y-1)} 
-                else if na && not a && can_i_move obj (-1,0) couilles then Player {pos=(x-1,y)} 
-                else if ns && not s && can_i_move obj (0,1) couilles then Player {pos=(x,y+1)} 
-                else if nd && not d && can_i_move obj (1,0) couilles then Player {pos=(x+1,y)} 
-                else Player p
-                | Wall w -> if gamestate.time = w.speed then Wall {pos = (let x,y = w.pos in (x,(y+1) mod (h/size))) ; speed=w.speed} else Wall w) 
-        gamestate.objects;
-        prevkeys = (nw,na,ns,nd);
-        time = (gamestate.time + 1) mod 4
-                }
+        let nw,na, ns,nd = (int_of_bool(is_key_down Key.W),
+        int_of_bool(is_key_down Key.A),int_of_bool(is_key_down Key.S),int_of_bool(is_key_down Key.D)) in
+        
+        let bads' = List.map (fun obj ->
+            match obj with Bad b -> Bad {pos=( repulse b player) $* 5 $+ b.pos $+ (b.dir $* 2);dir=b.dir;} | _ -> Good gamestate.good) objects in
+        let good' = {pos= good.pos $+ (good.dir $* 2);dir=good.dir;} in
+        let player' =  {pos= (let x,y = player.pos in (x+(nd-na)*speed,y+(ns-nw)*speed)); dir = (69,420)} in
+        if dist player good > (id_ray) then
+         loop {
+             bads = bads';
+             good = good';
+             player = player';
+             prevkeys = (nw,na,ns,nd);
+             time = (gamestate.time + 1) mod 60
+         } else print_string "hold up"; Raylib.close_window ()
 let lilian () = loop (setup ())
