@@ -1,7 +1,7 @@
 let w = 500
 let h = 500
 let size = 50
-let qqty = 10
+let qqty = 4
 type player  = {pos: int*int}
 type box = {pos: int*int; ind: int}
 type obj = Player of player | Box of box
@@ -46,7 +46,7 @@ let ($*) pos q = let x, y = pos in (x * q, y * q)
 
 let shifted_of_absolute pos cam = (pos $* size) $+ (w / 2, h / 2) $+ (cam $* -1) 
 
-let rec find_at pos objs=
+let rec find_at pos objs =
   match objs with
   | [] -> None
   | t::q -> if (get_pos t) $= pos then Some t else find_at pos q
@@ -74,8 +74,21 @@ let rec concat nobjs objs i =
        None -> (match find_with_ind i objs with None -> failwith "lost forever" | Some o -> o)
      | Some o -> o)::(concat nobjs objs (i-1))
 
+let is_neight_preced b objects =
+  if b.ind = 1 then true else
+  match find_at (b.pos $+ (-1,0)) objects with 
+  Some (Box b') ->  let (x',y'),(x,y) = b'.pos,b.pos in  x' < x && y' = y && b'.ind = b.ind -1 
+     | _ -> false
+
+let rec sorted objects =
+      match objects with
+      | [] -> true
+      | (Player _) ::q -> sorted q 
+      | (Box b)::q -> if is_neight_preced b objects then sorted q else false 
+   
+
 let rec loop gamestate =
-  if Raylib.window_should_close () then Raylib.close_window ()
+  if Raylib.window_should_close () || (sorted gamestate.objects) then Raylib.close_window ()
   else
     let open Raylib in
     begin_drawing ();
@@ -85,7 +98,8 @@ let rec loop gamestate =
         | Player p -> let x,y = shifted_of_absolute p.pos gamestate.camera in draw_rectangle x y size size Color.raywhite
         | Box b -> let x,y = shifted_of_absolute b.pos gamestate.camera in  draw_rectangle x y size size
             (color_from_hsv ((float_of_int (b.ind*360)) /. (float_of_int qqty)) 0.7 1.);
-          draw_text (string_of_int b.ind) x y 20 Color.raywhite;
+          draw_text (string_of_int b.ind) x y 20 
+          (if is_neight_preced b gamestate.objects then Color.raywhite else Color.black )   ;
       ) ((Player gamestate.player)::gamestate.objects);
 
     end_drawing ();
