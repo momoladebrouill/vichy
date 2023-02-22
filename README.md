@@ -6,12 +6,11 @@ Fait en ocaml parce qu'on aime le fun lol ;)
 
 ## Lilian
 
-Un labyrinthe simple dont les parois disparaissent après X secondes, mais il faut quand même réussir à s'échapper !
-
+Un bonhomme cherche une boule verte au milieu de boules rouges
 ## Ophélie
 
 Un bonhomme pousse des blocs avec des numéros dessus et il faut les remettre dans l'ordre croissant
 
 ## Marc de Marco
 
-Tours de Hanoï
+Tours de Hanoï x Tetris genre

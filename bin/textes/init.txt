@@ -7,7 +7,14 @@ Voici donc trois défis,
 (Que vous devrez réussir sans surcis),
 Créés spécialement par des maîtres de la MP2I
 [ENTER]
-Le premier, proposé par Maître Lilian,
-S'articule se faisant :
-Déplacez vous grâce aux flèches,
-Pour 
+Pour le premier défi,
+Vous devrez chercher dans un bazard inédit
+La fin des cours de Lilian
+Qui n'a pas pu termier sa phrase indiquant
+Des conseils ocaml très importants
+[ENTER]
+Il vous faudra ainsi
+Trouver un cercle vert 
+(le conseil d'enfer)
+Sans toucher de rouge !
+(qui ne vaut pas plus qu'une courge !)
