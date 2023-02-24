@@ -97,7 +97,7 @@ let w = 700
 let h = 700
 let text_width = 20
 let text_height = 30
-let abs_path = "../../../src/textes/" 
+let abs_path = "./src/textes/" 
 let font = load_font_ex (abs_path^"jean.ttf") 96 None 
 
 let setup () =
