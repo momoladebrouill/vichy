@@ -1,145 +1,61 @@
-(*let width = 800
-let height = 450
-let msg = "Loaded Font"
-
-let setup () =
-  let open Raylib in
-  init_window 800 450 "gerge";
-  let font = load_font_ex "font.ttf" 96 None in
-  gen_texture_mipmaps (addr (Font.texture font));
-  let font_size = Font.base_size font in
-  let font_position = Vector2.create 40.0 ((Float.of_int height /. 2.0) -. 80.0)
-  in
-  set_texture_filter (Font.texture font) TextureFilter.Point;
-  set_target_fps 60;
-  (font, font_size, font_position)
-
-let rec loop font font_size font_position filter =
-  match Raylib.window_should_close () with
-  | true ->
-      let open Raylib in
-      unload_font font;
-      close_window ()
-  | false ->
-      let open Raylib in
-      let font_size =
-        font_size + (Int.of_float (get_mouse_wheel_move ()) * 4)
-      in
-      let filter =
-        if is_key_pressed Key.One then (
-          set_texture_filter (Font.texture font) TextureFilter.Point;
-          `Point)
-        else if is_key_pressed Key.Two then (
-          set_texture_filter (Font.texture font) TextureFilter.Bilinear;
-          `Bilinear)
-        else if is_key_pressed Key.Three then (
-          set_texture_filter (Font.texture font) TextureFilter.Trilinear;
-          `Trilinear)
-        else filter
-      in
-      let text_size = measure_text_ex font msg (Float.of_int font_size) 0.0 in
-
-      (if is_key_down Key.Left then
-       Vector2.(set_x font_position (x font_position -. 10.0))
-      else if is_key_down Key.Right then
-        Vector2.(set_x font_position (x font_position +. 10.0)));
-
-      let font =
-        if is_file_dropped () then (
-          (* NOTE: We only support first ttf file dropped *)
-          let dropped = load_dropped_files () in
-          match FilePathList.files dropped with
-          | [] -> font
-          | file :: _ ->
-              unload_font font;
-              let font = load_font_ex file font_size None in
-              unload_dropped_files dropped;
-              font)
-        else font
-      in
-
-      begin_drawing ();
-      clear_background Color.raywhite;
-
-      draw_text "Use mouse wheel to change font size" 20 20 10 Color.gray;
-      draw_text "Use Key.Right and Key.Left to move text" 20 40 10 Color.gray;
-      draw_text "Use 1, 2, 3 to change texture filter" 20 60 10 Color.gray;
-
-      draw_text "Drop a new TTF font for dynamic loading" 20 80 10
-        Color.darkgray;
-      draw_text_ex font msg font_position (Float.of_int font_size) 0.0
-        Color.black;
-
-      draw_rectangle 0 (height - 80) width 80 Color.lightgray;
-      draw_text
-        (Printf.sprintf "Font size: %02d" font_size)
-        20 (height - 50) 10 Color.darkgray;
-      draw_text
-        (Printf.sprintf "Text size: [%02.02f, %02.02f]" (Vector2.x text_size)
-           (Vector2.y text_size))
-        20 (height - 30) 10 Color.darkgray;
-
-      (match filter with
-      | `Point -> draw_text "POINT" 570 400 20 Color.black
-      | `Bilinear -> draw_text "BILINEAR" 570 400 20 Color.black
-      | `Trilinear -> draw_text "TRILINEAR" 570 400 20 Color.black);
-
-      end_drawing ();
-      loop font font_size font_position filter
-
-let () =
-  let font, font_size, font_position = setup () in
-  loop font font_size font_position `Point
-
-*)open Raylib
+open Raylib
 
 let w = 700
 let h = 700
-let text_width = 20
+let text_width = 14
 let text_height = 30
 let abs_path = "../../../src/textes/" 
-let font = load_font_ex (abs_path^"jean.ttf") 96 None 
 
 let setup () =
   Raylib.init_window w h "vichy";
   Raylib.set_target_fps 60;
-  set_texture_filter (Font.texture font) TextureFilter.Point;
+
+  let font = load_font_ex (abs_path^"font.ttf") 600 None in
   gen_texture_mipmaps (addr (Font.texture font));
-  Random.self_init ()
+  set_texture_filter (Font.texture font) TextureFilter.Trilinear;
+  set_target_fps 60;
+  Random.self_init ();
+  font
 
+let get_char cl = really_input_string cl 1
+(*
+    let c = input_char cl in
+    let v = Char.code c in
+    let cs = String.make 1 c in
+    if 60<=v && v<=122 || c = ' ' || c = '\n' ||c='?' then cs
+    else cs^(get_char cl)*)
 
-type state = Waiting | Writting | Escape
+type state = Waiting | Writting 
 
 type text_env = { 
     state : state;
-    c : char;
+    c : string;
     x : int;
     y : int;
 }
 
-let rec text t =
+let rec text t font=
   let rec text_aux cs time =
     if Raylib.window_should_close () then Raylib.close_window ();
     Raylib.begin_drawing ();
-
+    let v =  (Raylib.Vector2.create (float_of_int cs.x) (float_of_int cs.y)) in
+    (*draw_text_codepoint font (Char.code cs.c) v 30. Color.raywhite;*)
     Raylib.draw_text_ex 
-      font (String.make 1 cs.c) (Raylib.Vector2.create (float_of_int cs.x) (float_of_int cs.y)) 30. 0.0
-     Raylib.Color.raywhite;
+      font  cs.c v 30. 0.0 Raylib.Color.raywhite;
     Raylib.end_drawing ();
     let state = if Raylib.is_key_pressed Raylib.Key.Space 
-      then (if Char.code cs.c = 0 then Escape else  Writting) else cs.state in
+      then  Writting else cs.state in
     match state with 
-    | Escape -> ()
     | Writting ->
             begin
             try (
                (* Juste avant on attendais, maintenant on écrit => c'est une nouvelle partie,sur le même in_channel*)
-              if cs.state = Waiting then text t else
-              let triger_newline = cs.x + text_width > w || cs.c = '\n' in
+              if cs.state = Waiting then text t font else
+              let triger_newline = cs.x + text_width > w || cs.c = "\n" in
               (if time mod 2 = 0 then let cs' =
                 { 
-                  state = if cs.c = ']' then Waiting else state;
-                  c = input_char t ;
+                  state = if cs.c = "]" then Waiting else state;
+                  c = get_char t ;
                   x = if triger_newline then text_width else cs.x+text_width;
                   y = if triger_newline then cs.y + text_height else cs.y;
                 } in text_aux cs' 
@@ -148,15 +64,15 @@ let rec text t =
    | Waiting -> text_aux cs ((time+1) mod 60)
   in
   Raylib.clear_background Raylib.Color.black;
-  text_aux {c=input_char t;x=text_width;y=text_height;state=Writting} 0
+  text_aux {c=get_char t;x=text_width;y=text_height;state=Writting} 0
 
 let () =
-  setup ();
-  text (open_in (abs_path ^"init.txt"));
+    let font =  setup () in 
+  text (open_in (abs_path ^"init.txt")) font;
   Lilian.lilian w h;
-  text (open_in (abs_path ^"lilian_to_ophelie.txt")); 
+  text (open_in (abs_path ^"lilian_to_ophelie.txt")) font; 
   Ophelie.ophelie w h;
-  text (open_in (abs_path ^"ophelie_to_marc.txt")); 
+  text (open_in (abs_path ^"ophelie_to_marc.txt")) font; 
   Marc.marc w h;
-  text (open_in (abs_path ^"end.txt")); 
+  text (open_in (abs_path ^"end.txt")) font; 
   unload_font font;

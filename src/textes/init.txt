@@ -1,21 +1,27 @@
-Bienvenue jeune fougueux !
-Alors, comme ça, vous voulez rejoindre l'X ?
-Pour cela, il vous faudra passer des tests tumultueux,
+ Bienvenue jeune fougueux !
+Alors, comme ca, vous voulez rejoindre l'X ?
+Passez donc ces tests tumultueux,
 Qui ne vous laisseront pas sans cicatrice !
 [SPACE]
-Voici donc trois défis,
-(Que vous devrez réussir sans surcis),
-Créés spécialement par des maîtres de la MP2I
+Vous voila devant trois defis,
+(Que vous devrez reussir sans soucis),
+Crees specialement par des maitres de la MP2I
 [SPACE]
-Pour le premier défi,
-Vous devrez chercher dans un bazard inédit
+Pour le premier defi,
+Vous devrez chercher dans un bazard inedit
 La fin des cours de Lilian
-Qui n'a pas pu termier sa phrase indiquant
-Des conseils ocaml très importants
+Qui n'a pas pu, malheureusement,
+Termier sa phrase indiquant
+Des conseils ocaml tres importants
 [SPACE]
 Il vous faudra ainsi
 Trouver un cercle vert 
 (le conseil d'enfer)
 Sans toucher de rouge !
-(qui ne vaut pas plus qu'une courge !)
+(qui ne vaut pas plus qu'une courge)
 [SPACE]
+Pret ?
+[SPACE]
+C'est parti !!!
+[SPACE]
+

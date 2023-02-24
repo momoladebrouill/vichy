@@ -1,22 +1,25 @@
-Encore un défi gagné ?
-Celui-ci n'était pas aisé
-Mais, après tout, un coup de chance est très vite arrivé.
+Vous voila avec encore un niveau en poche!
 [SPACE]
-Un nouveau maître arrive ...
+Un nouveau maitre arrive ...
 [SPACE]
-Un certain Damiens ...
+Un certain Iaria ...
 [SPACE]
 Eh bien non rien,
+[SPACE]
 Il est reparti
 [SPACE]
-Voici donc un dernier défi,
+Voici donc un dernier defi,
 Celui de maitre Marc,
-Il sera compliqué, alors prenez vos marques :
-Vous avez à votre disposition 9 tours de Hanoï
-Mais, à intervalles régulières, 
-De nouvelles briques tombent tel une langue d'Oïl,
-Sur une tour choisie sans raison particulière.
-Votre but est donc d'organiser ces dernières 
+Ca se complique, alors prenez vos marques :
+[SPACE]
+Vous avez a votre disposition 9 tours de Hanoi
+Mais, a intervalles regulieres, 
+De nouvelles briques tombent tel une langue d'Oil,
+Sur une tour choisie sans raison particuliere.
+[SPACE]
+Votre but est donc d'organiser ces dernieres 
 Afin de ne jamais tomber sur un stack overflow, 
-Car vous y perderez votre philo...
+(Au risque d'y perdre votre philo...)
+[SPACE]
+Allez lesgo !
 [SPACE]

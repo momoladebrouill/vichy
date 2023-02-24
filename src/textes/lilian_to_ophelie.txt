@@ -1,13 +1,25 @@
-Ainsi donc, vous avez réussi ce premier défi ?
-Ce n'est pas que j'y avait pris pari
-Mais juste que peu encore ont réussi...
+Bravo, defi reussi !
+Celui-ci etait facile, oui,
+Alors, pas de quoi se rejouir,
+Au travail, petit menhir !
 [SPACE]
-Voici ici un autre défi,
-Proposé par maître Ophélie
+Voici ici un autre defi,
+Que propose maitre Ophelie
 Celui-ci est plus coriace,
-Vous devrez, avec grâce,
-Pousser des blocks pour les remettre dans l'ordre croissant
-Je sais que vous en serez capable,
-Alors, je vous donne 10 secondes, à partir du moment
-Où vous appuyerez sur enter de manière exécrable !
+Vous devrez, avec grace,
+Pousser des blocs pour les remettre dans l'ordre croissant
+Vous devrez donc utilisez,
+S'il vous plait,
+Des algorithmes de tris.
+Un outil simple, mais a reserver aux aguerits
+[SPACE]
+Ah oui d'ailleurs
+[SPACE]
+Sans vouloir vous faire peur
+[SPACE]
+Mais si par malheur
+[SPACE]
+Vous perdez ici,
+[SPACE]
+Pour vous, la prepa, c'est fini !
 [SPACE]
