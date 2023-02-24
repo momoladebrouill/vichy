@@ -41,7 +41,7 @@ let ($*) a b =
 let ($/) a s =
   let xa, ya = a in
   let xs, ys = s in
-  ((xa mod xs) + xs mod xs, (ya mod ys) + ys mod ys)
+  ((xa mod xs + xs) mod xs, (ya mod ys + ys) mod ys)
 
 let dist a b =
   let (x, y), (x', y') = a.pos, b.pos in 
@@ -84,8 +84,8 @@ let rec loop gamestate w h =
     ) in
         
     let bads' = List.map (fun obj ->
-      match obj with Bad b -> Bad {pos = (repulse b player) $* 5 $+ b.pos $+ (b.dir $* 2);dir = b.dir;} | _ -> Good gamestate.good) objects in
-      let good' = {pos = good.pos $+ (good.dir $* 2);dir = good.dir;} in
+      match obj with Bad b -> Bad {pos = (repulse b player) $* 5 $+ b.pos $+ (b.dir $* 2) $/ (w, h);dir = b.dir;} | _ -> Good gamestate.good) objects in
+      let good' = {pos = good.pos $+ (good.dir $* 2) $/ (w, h);dir = good.dir;} in
       let player' = {pos = (let x, y = player.pos in (x + (nd - na) * speed, y + (ns - nw) * speed)); dir = (69, 420)} in
       if dist player good > (id_ray) then
         loop {
