@@ -1,4 +1,4 @@
 make:
 	clear
 	dune build
-	./_build/default/bin/main.exe
+	./_build/default/src/main.exe
