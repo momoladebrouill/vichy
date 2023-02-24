@@ -1,6 +1,8 @@
 let slabWidth = 20
 let slabHeight = 22
 
+exception Perdu
+
 type slab = 
     Null 
   | Slab of {size: int; next: slab; color: Raylib.Color.t }
@@ -16,7 +18,8 @@ type gamestate = {
   current : int;
   prevKeys : (bool*bool*bool*bool*bool);
   time : int;
-  nextslab : (int*Raylib.Color.t)
+  nextslab : (int*Raylib.Color.t);
+  spawn_tempo : int;
 }
 
 let colors = [|
@@ -29,21 +32,24 @@ let colors = [|
 let random_color () =
     colors.(Random.int 4)
 
-let generate_tower n =
+(*let generate_tower n =
   let rec gen acc i =
     if i = 0 then acc
     else gen (Slab {size = i; next = acc; color = random_color () } ) (i-1)
   in
-  gen Null n
+  gen Null (n-n)*)
 
 let generate_towers () =
   let rec gen acc i =
     if i = 0 then acc
-    else gen ({top = generate_tower ((Random.int 2) * 4); index = i-1}::acc) (i-1)
+    else gen ({top = Null; index = i-1}::acc) (i-1)
   in gen [] 9
 
 let towerPos i w h = 
   ( (1 + (i mod 3)) * w / 4, (1 + (i / 3)) * h / 4 + h / 8)
+
+
+let gen_slab () = (Random.int 4 + 1, random_color ()) 
 
 let setup () =
   { 
@@ -53,6 +59,7 @@ let setup () =
     prevKeys = (false, false, false, false, false);
     time = 0;
     nextslab = (1,random_color ());
+    spawn_tempo = 4*60;
   }
 
 let draw_slab x y b =
@@ -95,9 +102,10 @@ let rec loop gamestate w h =
     let mess = "In yours hands:" in 
     draw_text mess (w/2-(measure_text mess 24)/2) (h/18) 24 Color.raywhite;
     draw_slab (w/2) (h/9) gamestate.hold;
-    let mess = ("Next to arrive:"^(Printf.sprintf "%02d" ((360-(gamestate.time mod 360))/10))) in 
+    let mess = ("Next to arrive:"(*^(Printf.sprintf "%d" ((spawn_tempo-(gamestate.time mod spawn_tempo)))*)) in 
     draw_text mess 0 (h/18) 20 Color.raywhite;
-    draw_slab ((measure_text mess 20)/2) (h/9) (let s,c=gamestate.nextslab in Slab {color=c;size=s;next=Null});
+    let s,c = gamestate.nextslab in
+    draw_slab (s/2) (h/9) (Slab {color=c;size=s;next=Null});
 
 
     List.iteri (fun i tow-> 
@@ -111,7 +119,7 @@ let rec loop gamestate w h =
 
     end_drawing ();
 
-    let spawn = if gamestate.time mod 360 = 0 then Random.int 9 else -1 in
+    let spawn = if gamestate.time mod gamestate.spawn_tempo = 0 then 4 else -1 in
 
     let up, right, down, left, space = gamestate.prevKeys in
 
@@ -151,15 +159,20 @@ let rec loop gamestate w h =
       else 
         tow
     ) towershold in
+    let spawn_tempo, nextslab = if gamestate.time = gamestate.spawn_tempo 
+      then gamestate.spawn_tempo - 60,(gen_slab ())
+      else gamestate.spawn_tempo, gamestate.nextslab
+    in
 
-    
+    if spawn_tempo <= 0 then () else
     let gamestate' = { 
       towers = towers;
       current = current;
       prevKeys = (is_key_down Key.Up, is_key_down Key.Right, is_key_down Key.Down, is_key_down Key.Left, is_key_down Key.Space);
       hold = hold;
-      time = gamestate.time + 1;
-      nextslab = if gamestate.time mod 360 = 0 then (Random.int 4 + 1, random_color ()) else gamestate.nextslab;
+      time = if gamestate.time = gamestate.spawn_tempo then 0 else gamestate.time + 1;
+      spawn_tempo = spawn_tempo;
+      nextslab = nextslab;
     } in
     loop gamestate' w h
 

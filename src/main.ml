@@ -5,7 +5,7 @@ let h = 700
 let text_width = 14
 let text_height = 30
 let abs_path = "./src/textes/" 
-let font = load_font_ex (abs_path^"jean.ttf") 96 None 
+
 
 let setup () =
   Raylib.init_window w h "vichy";
@@ -68,7 +68,9 @@ let rec text t font=
   text_aux {c=get_char t;x=text_width;y=text_height;state=Writting} 0
 
 let () =
-    let font =  setup () in 
+  let font =  setup () in 
+  begin try 
+  Marc.marc w h;
   text (open_in (abs_path ^"init.txt")) font;
   Lilian.lilian w h;
   text (open_in (abs_path ^"lilian_to_ophelie.txt")) font; 
@@ -76,4 +78,5 @@ let () =
   text (open_in (abs_path ^"ophelie_to_marc.txt")) font; 
   Marc.marc w h;
   text (open_in (abs_path ^"end.txt")) font; 
+  with Ophelie.Perdu | Lilian.Perdu | Marc.Perdu -> text (open_in (abs_path ^"perdu.txt")) font; | e -> raise e end;
   unload_font font;

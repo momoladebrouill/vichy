@@ -1,13 +1,15 @@
 let size = 50
-let qqty = 4
+let qqty = 10
 type player  = {pos: int*int}
 type box = {pos: int*int; ind: int}
 type obj = Player of player | Box of box
 
+exception Perdu
 type gamestate = {
   objects : obj list;
   prevkeys : (bool*bool*bool*bool);
   player : player;
+  time : int;
   camera : (int*int);
 }
 
@@ -21,6 +23,7 @@ let setup () =
     objects = generate qqty;
     prevkeys = (false, false, false, false);
     camera = (0, 0);
+    time = 60*60;
   }
 
 let get_pos obj =
@@ -94,11 +97,11 @@ let rec loop gamestate w h =
         match obj with
         | Player p -> let x,y = shifted_of_absolute p.pos gamestate.camera w h in draw_rectangle x y size size Color.raywhite
         | Box b -> let x,y = shifted_of_absolute b.pos gamestate.camera w h in  draw_rectangle x y size size
-            (color_from_hsv ((float_of_int (b.ind*360)) /. (float_of_int qqty)) 0.7 1.);
+            (color_from_hsv ((float_of_int (b.ind*360)) /. (float_of_int qqty)) 0.9 1.);
           draw_text (string_of_int b.ind) x y 20 
           (if is_neight_preced b gamestate.objects then Color.raywhite else Color.black )   ;
       ) ((Player gamestate.player)::gamestate.objects);
-
+    draw_text (Printf.sprintf "Plus que %d s" (gamestate.time/60)) 0 0 24 Color.raywhite;
     end_drawing ();
 
     let ww,a,s,d = gamestate.prevkeys in
@@ -118,6 +121,7 @@ let rec loop gamestate w h =
       prevkeys = (nw, na, ns, nd);
       player = player; 
       camera = camera;
+      time = (if gamestate.time = 0 then raise Perdu  else gamestate.time -1);
     }
     in loop gamestate' w h
 let ophelie w h = loop (setup ()) w h

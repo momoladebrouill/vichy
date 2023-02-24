@@ -1,6 +1,7 @@
 let size = 10.
 let speed = 3
 let qqty = 100
+let dead_ray = 2000.
 let repulse_ray = 2500.
 let id_ray = 5000.
 let show_ray = 20000.
@@ -9,6 +10,8 @@ type obj =
   Player of boul
   | Bad of boul 
   | Good of boul
+
+exception Perdu
 
 type gamestate = {
   bads : obj list;
@@ -68,8 +71,11 @@ let rec loop gamestate w h =
       match obj with
         Player p -> let x, y = p.pos in draw_rectangle x y 10 10 Color.orange
       | Bad b -> let x, y = b.pos in draw_circle x y size 
-        (let d = dist player b in if d < id_ray then Color.red 
-        else if d < show_ray then Color.white else Color.black) 
+        (let d = dist player b in
+          if d < dead_ray then raise Perdu
+          else if d < id_ray then Color.red 
+          else if d < show_ray then Color.white 
+          else Color.black) 
       | Good b -> let x,y = b.pos in draw_circle x y size 
         (let d = dist player b in if d < id_ray then Color.green 
         else if d < show_ray then Color.green else Color.black) 
