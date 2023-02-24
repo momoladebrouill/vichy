@@ -1,14 +1,14 @@
 Encore un défi gagné ?
 Celui-ci n'était pas aisé
 Mais, après tout, un coup de chance est très vite arrivé.
-[ENTER]
+[SPACE]
 Un nouveau maître arrive ...
-[ENTER]
+[SPACE]
 Un certain Damiens ...
-[ENTER]
+[SPACE]
 Eh bien non rien,
 Il est reparti
-[ENTER]
+[SPACE]
 Voici donc un dernier défi,
 Celui de maitre Marc,
 Il sera compliqué, alors prenez vos marques :
@@ -19,4 +19,4 @@ Sur une tour choisie sans raison particulière.
 Votre but est donc d'organiser ces dernières 
 Afin de ne jamais tomber sur un stack overflow, 
 Car vous y perderez votre philo...
-[ENTER]
+[SPACE]

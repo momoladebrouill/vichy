@@ -1,4 +1,5 @@
 (executable
  (public_name vichy)
  (name main)
+ (modules main Lilian Marc Ophelie)
  (libraries raylib))

@@ -2,19 +2,20 @@ Bienvenue jeune fougueux !
 Alors, comme ça, vous voulez rejoindre l'X ?
 Pour cela, il vous faudra passer des tests tumultueux,
 Qui ne vous laisseront pas sans cicatrice !
-[ENTER]
+[SPACE]
 Voici donc trois défis,
 (Que vous devrez réussir sans surcis),
 Créés spécialement par des maîtres de la MP2I
-[ENTER]
+[SPACE]
 Pour le premier défi,
 Vous devrez chercher dans un bazard inédit
 La fin des cours de Lilian
 Qui n'a pas pu termier sa phrase indiquant
 Des conseils ocaml très importants
-[ENTER]
+[SPACE]
 Il vous faudra ainsi
 Trouver un cercle vert 
 (le conseil d'enfer)
 Sans toucher de rouge !
 (qui ne vaut pas plus qu'une courge !)
+[SPACE]

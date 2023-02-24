@@ -1,7 +1,7 @@
 Ainsi donc, vous avez réussi ce premier défi ?
 Ce n'est pas que j'y avait pris pari
 Mais juste que peu encore ont réussi...
-[ENTER]
+[SPACE]
 Voici ici un autre défi,
 Proposé par maître Ophélie
 Celui-ci est plus coriace,
@@ -10,3 +10,4 @@ Pousser des blocks pour les remettre dans l'ordre croissant
 Je sais que vous en serez capable,
 Alors, je vous donne 10 secondes, à partir du moment
 Où vous appuyerez sur enter de manière exécrable !
+[SPACE]
