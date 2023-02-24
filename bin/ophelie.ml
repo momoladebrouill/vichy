@@ -1,5 +1,3 @@
-let w = 500
-let h = 500
 let size = 50
 let qqty = 4
 type player  = {pos: int*int}
@@ -18,8 +16,6 @@ let rec generate n =
   else (Box {pos = ((Random.int 10) - 5, (Random.int 10) - 5); ind = n})::(generate (n-1))
 
 let setup () =
-  Raylib.init_window w h "Vichy";
-  Raylib.set_target_fps 60;
   {
     player =  {pos = (0, 0)};
     objects = generate qqty;
@@ -44,7 +40,7 @@ let ($=) a b =
 
 let ($*) pos q = let x, y = pos in (x * q, y * q)
 
-let shifted_of_absolute pos cam = (pos $* size) $+ (w / 2, h / 2) $+ (cam $* -1) 
+let shifted_of_absolute pos cam w h = (pos $* size) $+ (w / 2, h / 2) $+ (cam $* -1) 
 
 let rec find_at pos objs =
   match objs with
@@ -87,16 +83,17 @@ let rec sorted objects =
       | (Box b)::q -> if is_neight_preced b objects then sorted q else false 
    
 
-let rec loop gamestate =
-  if Raylib.window_should_close () || (sorted gamestate.objects) then Raylib.close_window ()
+let rec loop gamestate w h =
+  if Raylib.window_should_close () then Raylib.close_window ()
+  else if (sorted gamestate.objects) then ()
   else
     let open Raylib in
     begin_drawing ();
     clear_background Color.black;
     List.iter (fun obj -> 
         match obj with
-        | Player p -> let x,y = shifted_of_absolute p.pos gamestate.camera in draw_rectangle x y size size Color.raywhite
-        | Box b -> let x,y = shifted_of_absolute b.pos gamestate.camera in  draw_rectangle x y size size
+        | Player p -> let x,y = shifted_of_absolute p.pos gamestate.camera w h in draw_rectangle x y size size Color.raywhite
+        | Box b -> let x,y = shifted_of_absolute b.pos gamestate.camera w h in  draw_rectangle x y size size
             (color_from_hsv ((float_of_int (b.ind*360)) /. (float_of_int qqty)) 0.7 1.);
           draw_text (string_of_int b.ind) x y 20 
           (if is_neight_preced b gamestate.objects then Color.raywhite else Color.black )   ;
@@ -104,11 +101,11 @@ let rec loop gamestate =
 
     end_drawing ();
 
-    let w,a,s,d = gamestate.prevkeys in
+    let ww,a,s,d = gamestate.prevkeys in
     let nw, na, ns, nd = (is_key_down Key.W,is_key_down Key.A,is_key_down Key.S,is_key_down Key.D) in
     let objects = gamestate.objects in
     let mobjects = (
-      if nw && not w then (move (Player gamestate.player) (0,-1) objects)
+      if nw && not ww then (move (Player gamestate.player) (0,-1) objects)
       else if na && not a then (move (Player gamestate.player) (-1,0) objects)
       else if ns && not s then (move (Player gamestate.player) (0,1) objects)
       else if nd && not d then (move (Player gamestate.player) (1,0) objects)
@@ -122,5 +119,5 @@ let rec loop gamestate =
       player = player; 
       camera = camera;
     }
-    in loop gamestate'
-let ophelie () = loop (setup ())
+    in loop gamestate' w h
+let ophelie w h = loop (setup ()) w h

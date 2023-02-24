@@ -1,5 +1,3 @@
-let w = 500
-let h = 500
 let size = 10.
 let speed = 3
 let qqty = 100
@@ -20,16 +18,13 @@ type gamestate = {
     time : int;
  }
 
-let gen_p () = {pos=((Random.int 20) * w/20,(Random.int 20) * h/20); dir=List.nth [(-1,0);(1,0);(0,-1);(0,1)] (Random.int 3);} 
+let gen_p w h = {pos=((Random.int 20) * w/20,(Random.int 20) * h/20); dir=List.nth [(-1,0);(1,0);(0,-1);(0,1)] (Random.int 3);} 
 
-let setup () =
-    Raylib.init_window w h "Vichy";
-    Raylib.set_target_fps 60;
-    Random.self_init ();
+let setup w h =
     {
         player = {pos = (0,0); dir = (0,0)};
-        good = (gen_p ());
-        bads = List.init 100 (fun _ -> Bad (gen_p ()));
+        good = (gen_p w h);
+        bads = List.init 100 (fun _ -> Bad (gen_p w h));
         prevkeys = (0,0,0,0);
         time = 0;
         }
@@ -38,9 +33,15 @@ let setup () =
 let ($+) a b =
     let xa,ya = a in
     let xb,yb = b in
-    ( (abs (xa+xb+w) ) mod w,(abs (ya+yb+h)) mod h)
+    ( xa+xb,ya+yb)
+
 let ($*) a b =
     let x,y= a in (x*b,y*b)
+
+let ($/) a s =
+  let xa, ya = a in
+  let xs, ys = s in
+  ((xa mod xs) + xs mod xs, (ya mod ys) + ys mod ys)
 
 let dist a b =
     let (x,y),(x',y') =  a.pos, b.pos in 
@@ -54,7 +55,7 @@ let repulse b player =
     let (x,y),(xp,yp) =  b.pos, player.pos in
      (if x-xp<0 then -1 else 1), (if y-yp<0 then -1 else 1)
 
-let rec loop gamestate =
+let rec loop gamestate w h =
     if Raylib.window_should_close () then Raylib.close_window ()
     else
         let open Raylib in
@@ -89,5 +90,5 @@ let rec loop gamestate =
              player = player';
              prevkeys = (nw,na,ns,nd);
              time = (gamestate.time + 1) mod 60
-         } else print_string "hold up"; Raylib.close_window ()
-let lilian () = loop (setup ())
+         } w h else print_string "hold up"; Raylib.close_window ()
+let lilian w h = loop (setup w h) w h
