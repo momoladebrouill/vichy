@@ -4,7 +4,8 @@ let w = 700
 let h = 700
 let text_width = 14
 let text_height = 30
-let abs_path = "../../../src/textes/" 
+let abs_path = "./src/textes/" 
+let font = load_font_ex (abs_path^"jean.ttf") 96 None 
 
 let setup () =
   Raylib.init_window w h "vichy";
