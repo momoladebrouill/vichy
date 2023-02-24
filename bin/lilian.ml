@@ -94,6 +94,6 @@ let rec loop gamestate w h =
           player = player';
           prevkeys = (nw,na,ns,nd);
           time = (gamestate.time + 1) mod 60
-        } w h else print_string "hold up"; Raylib.close_window ()
+        } w h else () 
 
 let lilian w h = loop (setup w h) w h

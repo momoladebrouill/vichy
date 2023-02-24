@@ -26,8 +26,6 @@ let () =
   Qui ne vous laisseront pas sans cicatrice !
   [SPACE]";
   text "cougilis"; 
-  Ophelie.ophelie w h;
-  (* Uncomment someone to play with, sale shrub*)
   Lilian.lilian w h;
-  (*Ophelie.ophelie ();*)
-  (*Vichy.vichy ();*)
+  Ophelie.ophelie w h;
+  Marc.marc w h;
