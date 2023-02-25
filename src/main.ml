@@ -11,9 +11,9 @@ let setup () =
   Raylib.init_window w h "vichy";
   Raylib.set_target_fps 60;
 
-  let font = load_font_ex (abs_path^"font.ttf") 600 None in
+  let font = load_font_ex (abs_path^"font.ttf") 30 None in
   gen_texture_mipmaps (addr (Font.texture font));
-  set_texture_filter (Font.texture font) TextureFilter.Point;
+  (*set_texture_filter (Font.texture font) TextureFilter.Point;*)
   set_target_fps 60;
   Random.self_init ();
   font
