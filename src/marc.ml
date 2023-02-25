@@ -20,29 +20,29 @@ type gamestate = {
   time : int;
   nextslab : (int*Raylib.Color.t);
   spawn_tempo : int;
+  round: int;
 }
 
 let colors = [|
   Raylib.color_from_hsv 360. 1. 1.;
   Raylib.color_from_hsv 270. 1. 1.;
   Raylib.color_from_hsv 180. 1. 1.;
-  Raylib.color_from_hsv 90. 1. 1.;
 |]
 
 let random_color () =
-    colors.(Random.int 4)
+    colors.(Random.int 3)
 
-(*let generate_tower n =
+let generate_tower n =
   let rec gen acc i =
     if i = 0 then acc
     else gen (Slab {size = i; next = acc; color = random_color () } ) (i-1)
   in
-  gen Null (n-n)*)
+  gen Null (n)
 
 let generate_towers () =
   let rec gen acc i =
     if i = 0 then acc
-    else gen ({top = Null; index = i-1}::acc) (i-1)
+    else gen ({top = if i mod 2 = 0 then generate_tower 4 else Null; index = i-1}::acc) (i-1)
   in gen [] 9
 
 let towerPos i w h = 
@@ -59,7 +59,8 @@ let setup () =
     prevKeys = (false, false, false, false, false);
     time = 0;
     nextslab = (1,random_color ());
-    spawn_tempo = 4*60;
+    spawn_tempo = 5*60;
+    round = 20;
   }
 
 let draw_slab x y b =
@@ -92,7 +93,14 @@ let checkwin tow =
     | (Slab a, Slab b) -> (a.size = b.size + 1 && b.color = a.color) && aux a.next (Slab a)
   in aux tow.top Null
 
- 
+let towerHeight tow =
+  let rec aux top = 
+    match top with
+    | Null -> 0
+    | Slab a -> 1 + aux a.next
+  in aux tow.top
+
+
 let rec loop gamestate w h =
   if Raylib.window_should_close () then Raylib.close_window () else
 
@@ -102,10 +110,12 @@ let rec loop gamestate w h =
     let mess = "In yours hands:" in 
     draw_text mess (w/2-(measure_text mess 24)/2) (h/18) 24 Color.raywhite;
     draw_slab (w/2) (h/9) gamestate.hold;
-    let mess = ("Next to arrive:"(*^(Printf.sprintf "%d" ((spawn_tempo-(gamestate.time mod spawn_tempo)))*)) in 
+    let mess = ("Next to arrive:")in 
     draw_text mess 0 (h/18) 20 Color.raywhite;
     let s,c = gamestate.nextslab in
-    draw_slab (s/2) (h/9) (Slab {color=c;size=s;next=Null});
+    draw_slab (s*32) (h/9) (Slab {color=c;size=s;next=Null});
+    let mess = "Rounds left: "^(string_of_int gamestate.round) in
+    draw_text mess (w-(measure_text mess 24)) (h/18) 20 Color.raywhite;
 
 
     List.iteri (fun i tow-> 
@@ -124,13 +134,13 @@ let rec loop gamestate w h =
     let up, right, down, left, space = gamestate.prevKeys in
 
     let current = 
-      (if is_key_down Key.Left && not left then 
+      (if is_key_down Key.A && not left then 
          (((gamestate.current - 1) mod 9) + 9)
-       else if is_key_down Key.Right && not right then 
+       else if is_key_down Key.D && not right then 
          (gamestate.current + 1) 
-       else if is_key_down Key.Down && not down then
+       else if is_key_down Key.S && not down then
          (gamestate.current +3)
-       else if is_key_down Key.Up && not up then
+       else if is_key_down Key.W && not up then
          (((gamestate.current - 3)mod 9) +9)
        else gamestate.current) mod 9
     in
@@ -153,26 +163,29 @@ let rec loop gamestate w h =
     let hold = first_not_none (List.map (fun (_, hold) -> hold) towershold) gamestate.hold in
     let towers = List.map (fun (tow, _) ->
       if checkwin tow then 
-        {top = Null; index = tow.index} 
+        {top = Null; index = tow.index}
       else if tow.index = spawn then 
         {top = (let s,c = gamestate.nextslab in Slab {size = s; next = tow.top; color = c }); index = tow.index}
       else 
         tow
     ) towershold in
-    let spawn_tempo, nextslab = if gamestate.time = gamestate.spawn_tempo 
-      then gamestate.spawn_tempo - 60,(gen_slab ())
+    let spawn_tempo, nextslab = if spawn <> -1
+      then gamestate.spawn_tempo,(gen_slab ())
       else gamestate.spawn_tempo, gamestate.nextslab
     in
 
-    if spawn_tempo <= 0 then () else
+    let state = List.fold_left (fun a b -> a || towerHeight b > 6) false gamestate.towers in
+    if state then raise Perdu else
+    if gamestate.round <= 0 then () else
     let gamestate' = { 
       towers = towers;
       current = current;
-      prevKeys = (is_key_down Key.Up, is_key_down Key.Right, is_key_down Key.Down, is_key_down Key.Left, is_key_down Key.Space);
+      prevKeys = (is_key_down Key.W, is_key_down Key.D, is_key_down Key.S, is_key_down Key.A, is_key_down Key.Space);
       hold = hold;
-      time = if gamestate.time = gamestate.spawn_tempo then 0 else gamestate.time + 1;
+      time = gamestate.time + 1;
       spawn_tempo = spawn_tempo;
       nextslab = nextslab;
+      round = gamestate.round - if spawn <> -1 then 1 else 0 ;
     } in
     loop gamestate' w h
 
