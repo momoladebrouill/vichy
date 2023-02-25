@@ -19,7 +19,7 @@ Sur la tour centrale, comme une cuillere...
 [SPACE]
 Votre but est donc d'organiser ces tours,
 Pour ne jamais creer un stack overflow,
-Qui se declenche des qu'une tour fait plus de 6 briques de haut!
+Qui se declenche quand une tour fait plus de 6 briques de haut!
 [SPACE]
 (Oui, c'est un tres petit compilo
 [SPACE]
