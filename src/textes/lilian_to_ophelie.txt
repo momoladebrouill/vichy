@@ -8,8 +8,8 @@ Que propose maitre Ophelie
 Celui-ci est plus coriace,
 Vous devrez, avec grace,
 [SPACE]
-Pousser des blocs pour les remettre dans l'ordre croissant
-On vous accorde un temps très petit
+Pousser des blocs pour les remettre dans l'ordre  croissant
+On vous accorde un temps tres petit
 Vous devrez donc utilisez,
 S'il vous plait,
 Des algorithmes de tris.
