@@ -5,6 +5,8 @@ Parcourez les défis d'Ophélie, Lilian, et Marc !
 Fait en ocaml parce qu'on aime le fun lol ;)  
 :warning: Code très **ocamleux** : pas de `ref`,`for`,`while`, on a voulu du pur fonctionnel :smiling_imp:
 
+Lancer `make` pour commencer l'aventure !
+
 ## Lilian :shipit:
 Un bonhomme cherche une boule verte au milieu de boules rouges : on dépoussière la documentation ocaml afin de trouver comment ça fonctionne
 ## Ophélie :black_medium_square:
