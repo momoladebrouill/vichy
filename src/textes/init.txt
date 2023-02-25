@@ -1,27 +1,29 @@
- Bienvenue jeune fougueux !
+Bienvenue jeune fougueux !
 Alors, comme ca, vous voulez rejoindre l'X ?
 Passez donc ces tests tumultueux,
-Qui ne vous laisseront pas sans cicatrice !
+Pour montrer la force qui vous est infixe !
 [SPACE]
-Vous voila devant trois defis,
+Voici donc trois defis,
 (Que vous devrez reussir sans soucis),
-Crees specialement par des maitres de la MP2I
+Crees specialement par des seigneurs de la MP2I,
+Les grands maitres Lilian, Marc, et Ophelie.
 [SPACE]
 Pour le premier defi,
-Vous devrez chercher dans un bazard inedit
-La fin des cours de Lilian
+Vous devrez chercher dans un bazard inedit,
+La fin des cours de Lilian,
 Qui n'a pas pu, malheureusement,
 Termier sa phrase indiquant
-Des conseils ocaml tres importants
+Des conseils ocaml tres importants.
 [SPACE]
-Il vous faudra ainsi
-Trouver un cercle vert 
+Il vous faudra ainsi,
+Trouver un cercle vert, 
 (le conseil d'enfer)
 Sans toucher de rouge !
-(qui ne vaut pas plus qu'une courge)
+(qui ne vaut pas plus qu'une courge !)
 [SPACE]
 Pret ?
 [SPACE]
 C'est parti !!!
 [SPACE]
-
+!!!!!!!
+[SPACE]

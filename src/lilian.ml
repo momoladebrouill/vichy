@@ -1,11 +1,19 @@
+(* Lilian : déplacement de sprite à la recherche du point vert en évitant les points rouges, identité masqué (en blanc) quand le point est trop loin*)
+
 let size = 10.
-let speed = 3
-let qqty = 100
+let speed = 3 (*du joueur*)
+let qqty = 100 (*nombre de méchants*)
+
 let dead_ray = 200.
 let repulse_ray = 2500.
 let id_ray = 5000.
 let show_ray = 20000.
-type boul = {pos: int*int; dir: int*int} 
+
+type boul = {
+    pos : int*int; 
+    dir: int*int
+}
+
 type obj = 
   Player of boul
   | Bad of boul 
@@ -21,11 +29,16 @@ type gamestate = {
   time : int;
 }
 
-let gen_p w h = {pos = ((Random.int 20) * w / 20, (Random.int 20) * h / 20); dir = List.nth [(-1,0); (1,0);( 0,-1); (0,1)] (Random.int 3);} 
+let gen_p w h = {
+    pos = ((Random.int 20) * w / 20, (Random.int 20) * h / 20); 
+    dir = List.nth [(-1,0); (1,0);( 0,-1); (0,1)] (Random.int 3);
+} 
 
-let setup w h =
-  {
-    player = {pos = ( 40, 40); dir = (0, 0)};
+let setup w h = {
+    player = {
+        pos = ( 40, 40); 
+        dir = (0, 0) (*tous les objets sonts de bouls, obligé de spécifier*)
+    };
     good = (gen_p w h);
     bads = List.init 100 (fun _ -> Bad (gen_p w h));
     prevkeys = (0, 0, 0, 0);
@@ -50,25 +63,27 @@ let dist a b =
   let (x, y), (x', y') = a.pos, b.pos in 
   (float_of_int (x - x')) ** 2. +. (float_of_int (y - y')) ** 2.
 
-let int_of_bool b=
-  if b then 1 else 0
+let int_of_bool b = if b then 1 else 0
 
 let repulse b player =
-  let _ = (player, b) in
-  (0, 0)(*
+  let _ = (player, b) in (0, 0)
+(* (* pour que les méchants essayent de s'écarter de notre chemin vindieu !*)
   if dist b player > repulse_ray then (0, 0) else
   let (x, y), (xp, yp) = b.pos, player.pos in
   (if x - xp < 0 then -1 else 1), (if y - yp < 0 then -1 else 1)
 *)
+
 let rec loop gamestate w h =
   if Raylib.window_should_close () then Raylib.close_window ()
   else
     let open Raylib in
+    
     begin_drawing ();
     clear_background Color.black;
-    let objects = (Player gamestate.player)::(Good gamestate.good)::gamestate.bads in
     let player = gamestate.player in
     let good = gamestate.good in
+    
+    let objects = (Player player)::(Good good)::gamestate.bads in
     List.iter (fun obj -> 
       match obj with
         Player p -> let x, y = p.pos in draw_rectangle (x-5) (y-5) 10 10 Color.orange
@@ -85,16 +100,27 @@ let rec loop gamestate w h =
     end_drawing ();
     
     let nw, na, ns, nd = (
-      int_of_bool(is_key_down Key.W),
-      int_of_bool(is_key_down Key.A),
-      int_of_bool(is_key_down Key.S),
-      int_of_bool(is_key_down Key.D)
+      int_of_bool (is_key_down Key.W),
+      int_of_bool (is_key_down Key.A),
+      int_of_bool (is_key_down Key.S),
+      int_of_bool (is_key_down Key.D)
     ) in
         
     let bads' = List.map (fun obj ->
-      match obj with Bad b -> Bad {pos = (repulse b player) $* 5 $+ b.pos $+ (b.dir $* 1) $/ (w, h);dir = b.dir;} | _ -> Good gamestate.good) objects in
-      let good' = {pos = good.pos $+ (good.dir $* 2) $/ (w, h);dir = good.dir;} in
-      let player' = {pos = (let x, y = player.pos in (x + (nd - na) * speed, y + (ns - nw) * speed)); dir = (69, 420)} in
+      match obj with 
+        Bad b -> Bad {pos = (repulse b player) $* 5 $+ b.pos $+ (b.dir $* 1) $/ (w, h);dir = b.dir;} 
+        | _ -> Good gamestate.good) 
+    objects 
+    in
+      let good' = {
+          pos = good.pos $+ (good.dir $* 2) $/ (w, h);
+          dir = good.dir;
+    } in
+      let player' = {
+          pos = (let x, y = player.pos in (x + (nd - na) * speed, y + (ns - nw) * speed));
+          dir = (69, 420) (*parce que poggers*)
+      } 
+     in
       if dist player good > (dead_ray) then
         loop {
           bads = bads';

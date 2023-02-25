@@ -13,7 +13,7 @@ let setup () =
 
   let font = load_font_ex (abs_path^"font.ttf") 600 None in
   gen_texture_mipmaps (addr (Font.texture font));
-  set_texture_filter (Font.texture font) TextureFilter.Trilinear;
+  set_texture_filter (Font.texture font) TextureFilter.Point;
   set_target_fps 60;
   Random.self_init ();
   font
@@ -65,11 +65,11 @@ let rec text t font=
    | Waiting -> text_aux cs ((time+1) mod 60)
   in
   Raylib.clear_background Raylib.Color.black;
-  text_aux {c=get_char t;x=text_width;y=text_height;state=Writting} 0
+  text_aux {c="";x=0;y=text_height;state=Writting} 0
 
 let () =
   let font =  setup () in 
-  begin try 
+  begin try
   text (open_in (abs_path ^"init.txt")) font;
   Lilian.lilian w h;
   text (open_in (abs_path ^"lilian_to_ophelie.txt")) font; 
@@ -77,5 +77,6 @@ let () =
   text (open_in (abs_path ^"ophelie_to_marc.txt")) font; 
   Marc.marc w h;
   text (open_in (abs_path ^"end.txt")) font; 
+  (* Possible de faire des messages différents en fonction des niveaux mais flem*)
   with Ophelie.Perdu | Lilian.Perdu | Marc.Perdu -> text (open_in (abs_path ^"perdu.txt")) font; | e -> raise e end;
   unload_font font;

@@ -1,10 +1,23 @@
+(* Ophélie : pousser des blocs pour former une liste triée, les blocs sont blancs quand ils sont bien voisins avec leur n-1*)
+
 let size = 50
-let qqty = 10
-type player  = {pos: int*int}
-type box = {pos: int*int; ind: int}
-type obj = Player of player | Box of box
+let qqty = 10 (*nombre de blocs*)
+
+type player  = {
+    pos: int*int
+}
+
+type box = {
+    pos: int*int; 
+    ind: int
+}
+
+type obj = 
+    Player of player
+    | Box of box
 
 exception Perdu
+
 type gamestate = {
   objects : obj list;
   prevkeys : (bool*bool*bool*bool);
@@ -15,7 +28,10 @@ type gamestate = {
 
 let rec generate n =
   if n = 0 then []
-  else (Box {pos = ((Random.int 10) - 5, (Random.int 10) - 5); ind = n})::(generate (n-1))
+  else (Box {
+      pos = ((Random.int 10) - 5, (Random.int 10) - 5);
+      ind = n
+  })::(generate (n-1))
 
 let setup () =
   {
@@ -43,6 +59,7 @@ let ($=) a b =
 
 let ($*) pos q = let x, y = pos in (x * q, y * q)
 
+(* calculer la position d'affichage en fonction de combien la caméra s'est déplacée*)
 let shifted_of_absolute pos cam w h = (pos $* size) $+ (w / 2, h / 2) $+ (cam $* -1) 
 
 let rec find_at pos objs =
@@ -67,6 +84,7 @@ let rec find_with_ind i objs =
     |Player _ -> find_with_ind i q
     |Box t -> if t.ind = i then Some (Box t) else find_with_ind i q
 
+(* concaténation des nouveaux objets avec ceux qui ont été déplacés*)
 let rec concat nobjs objs i =
   if i=0 then [] else
     (match find_with_ind i nobjs with
@@ -80,10 +98,10 @@ let is_neight_preced b objects =
      | _ -> false
 
 let rec sorted objects =
-      match objects with
-      | [] -> true
-      | (Player _) ::q -> sorted q 
-      | (Box b)::q -> if is_neight_preced b objects then sorted q else false 
+   match objects with
+   | [] -> true
+   | (Player _) ::q -> sorted q 
+   | (Box b)::q -> if is_neight_preced b objects then sorted q else false 
    
 
 let rec loop gamestate w h =
@@ -91,8 +109,10 @@ let rec loop gamestate w h =
   else if (sorted gamestate.objects) then ()
   else
     let open Raylib in
+    
     begin_drawing ();
     clear_background Color.black;
+    
     List.iter (fun obj -> 
         match obj with
         | Player p -> let x,y = shifted_of_absolute p.pos gamestate.camera w h in draw_rectangle x y size size Color.raywhite
@@ -107,6 +127,7 @@ let rec loop gamestate w h =
     let ww,a,s,d = gamestate.prevkeys in
     let nw, na, ns, nd = (is_key_down Key.W,is_key_down Key.A,is_key_down Key.S,is_key_down Key.D) in
     let objects = gamestate.objects in
+    (*moved objects*)
     let mobjects = (
       if nw && not ww then (move (Player gamestate.player) (0,-1) objects)
       else if na && not a then (move (Player gamestate.player) (-1,0) objects)
@@ -114,8 +135,17 @@ let rec loop gamestate w h =
       else if nd && not d then (move (Player gamestate.player) (1,0) objects)
       else ((Player gamestate.player)::gamestate.objects))
     in
-    let player = match List.hd mobjects with Player p -> {pos = p.pos} | _ -> gamestate.player in
-    let camera = let (xc, yc), (xp, yp) = gamestate.camera, gamestate.player.pos in (xc + (xp * size - xc) / 7, yc + (yp * size - yc) / 7) in
+
+    (* le joueur sera toujours la tête si il est déplacé*)
+    let player = match List.hd mobjects with 
+      Player p -> {pos = p.pos} 
+      | _ -> gamestate.player 
+    in
+
+    let camera = let (xc, yc), (xp, yp) = gamestate.camera, gamestate.player.pos in 
+      (xc + (xp * size - xc) / 7, yc + (yp * size - yc) / 7) 
+    in
+
     let gamestate' = {
       objects = concat (List.tl mobjects) objects qqty;
       prevkeys = (nw, na, ns, nd);
@@ -124,4 +154,5 @@ let rec loop gamestate w h =
       time = (if gamestate.time = 0 then raise Perdu  else gamestate.time -1);
     }
     in loop gamestate' w h
+
 let ophelie w h = loop (setup ()) w h

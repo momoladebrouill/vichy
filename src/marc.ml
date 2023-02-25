@@ -1,3 +1,5 @@
+(* Marc :  tour de Hanoï revisté en mode survival (dédicace au cours sur les piles)*)
+
 let slabWidth = 20
 let slabHeight = 22
 
@@ -74,7 +76,6 @@ let draw_tower top x y =
     match t with
     | Null -> y
     | Slab b -> let ny = (aux b.next x y) - slabHeight in draw_slab x ny (Slab b); ny
-    (* Mon reuf ?? très sus *)
   in let _ = aux top x y in ()
 
 let rec first_not_none l default =
@@ -121,8 +122,8 @@ let rec loop gamestate w h =
     List.iteri (fun i tow-> 
         let x, y = towerPos i w h in
         draw_rectangle 
-          (x-slabWidth + 3) (y-slabHeight*6) 
-          ((slabWidth - 3)*2) (slabHeight*6) 
+          (x-slabWidth+3) (y-slabHeight*6) 
+          ((slabWidth-3)*2) (slabHeight*6) 
           (if gamestate.current = tow.index then Color.raywhite else Color.gray);
         draw_tower tow.top x y; 
       ) gamestate.towers;
@@ -139,12 +140,15 @@ let rec loop gamestate w h =
        else if is_key_down Key.D && not right then 
          (gamestate.current + 1) 
        else if is_key_down Key.S && not down then
-         (gamestate.current +3)
+         (gamestate.current + 3)
        else if is_key_down Key.W && not up then
-         (((gamestate.current - 3)mod 9) +9)
+         (((gamestate.current - 3) mod 9) + 9)
        else gamestate.current) mod 9
     in
 
+    (* un peu de tirage de cheveux ici mais on n'a pas trouvé d'autre manière : *)
+    
+    (* liste des tours et du potentiel tower hold : (tower, None) si on dépile pas, (tower, Some slab) si on dépile*) 
     let towershold = 
       List.map (fun tow -> 
           if is_key_down Key.Space && not space && (current = tow.index) then 
@@ -159,8 +163,11 @@ let rec loop gamestate w h =
           else (tow,None)
         ) gamestate.towers 
     in
-
+    
+    (* on récupère ainsi la nouvelle slab qui est hold*)
     let hold = first_not_none (List.map (fun (_, hold) -> hold) towershold) gamestate.hold in
+    
+    (* Update tranquillou des tours, en prenant donc le premier élément des duos de towershold*)
     let towers = List.map (fun (tow, _) ->
       if checkwin tow then 
         {top = Null; index = tow.index}
@@ -169,8 +176,9 @@ let rec loop gamestate w h =
       else 
         tow
     ) towershold in
+
     let spawn_tempo, nextslab = if spawn <> -1
-      then gamestate.spawn_tempo,(gen_slab ())
+      then gamestate.spawn_tempo (*modifications possibles ici si on veut que le jeu s'accélère*),(gen_slab ())
       else gamestate.spawn_tempo, gamestate.nextslab
     in
 

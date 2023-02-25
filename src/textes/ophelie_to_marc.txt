@@ -2,8 +2,8 @@ Vous voila avec encore un niveau en poche!
 [SPACE]
 Un nouveau maitre arrive ...
 [SPACE]
-Un certain Iaria ...
-[SPACE]
+Un certain maitre Lucas I ...
+[SPACE POUR LE CONNAITRE]
 Eh bien non rien,
 [SPACE]
 Il est reparti
@@ -14,12 +14,18 @@ Ca se complique, alors prenez vos marques :
 [SPACE]
 Vous avez a votre disposition 9 tours de Hanoi
 Mais, a intervalles regulieres, 
-De nouvelles briques tombent tel une langue d'Oil,
-Sur une tour choisie sans raison particuliere.
+Une nouvelle brique tombe du ciel, ahoy,
+Sur la tour centrale, comme une cuillere...
 [SPACE]
-Votre but est donc d'organiser ces dernieres 
-Afin de ne jamais tomber sur un stack overflow, 
-(Au risque d'y perdre votre philo...)
+Votre but est donc d'organiser ces tours,
+Pour ne jamais créer un stack overflow,
+Qui se déclenche dès qu'une tour fait plus de 6 briques de haut !
 [SPACE]
-Allez lesgo !
+(Oui, c'est un très petit compilot
+[SPACE]
+Fait pour du fractran, 
+[SPACE]
+le langage qu'on devrait apprendre en cours d'info)
+[SPACE]
+Allez lesgo !!!
 [SPACE]
