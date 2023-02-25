@@ -1,7 +1,7 @@
 # Vichy
 
 Le jeu pour passer d'un lycéen lambda de terminale :cat2: à un majorant de X-ENS  !:neckbeard:  
-Parcourez les défis d'Ophélie, Lilian, et Chad Marc !  
+Parcourez les défis d'Ophélie, Lilian, et Marc !  
 Fait en ocaml parce qu'on aime le fun lol ;)  
 :warning: Code très **ocamleux** : pas de `ref`,`for`,`while`, on a voulu du pur fonctionnel :smiling_imp:
 
