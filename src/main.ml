@@ -52,7 +52,7 @@ let rec text t font=
             try (
                (* Juste avant on attendais, maintenant on écrit => c'est une nouvelle partie,sur le même in_channel*)
               if cs.state = Waiting then text t font else
-              let triger_newline = cs.x + text_width > w || cs.c = "\n" in
+              let triger_newline = cs.x + 2*text_width > w || cs.c = "\n" in
               (if time mod 2 = 0 then let cs' =
                 { 
                   state = if cs.c = "]" then Waiting else state;
