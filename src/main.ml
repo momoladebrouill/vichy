@@ -70,7 +70,6 @@ let rec text t font=
 let () =
   let font =  setup () in 
   begin try 
-  Marc.marc w h;
   text (open_in (abs_path ^"init.txt")) font;
   Lilian.lilian w h;
   text (open_in (abs_path ^"lilian_to_ophelie.txt")) font; 
