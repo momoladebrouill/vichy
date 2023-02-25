@@ -118,7 +118,7 @@ let rec loop gamestate w h =
         | Player p -> let x,y = shifted_of_absolute p.pos gamestate.camera w h in draw_rectangle x y size size Color.raywhite
         | Box b -> let x,y = shifted_of_absolute b.pos gamestate.camera w h in  draw_rectangle x y size size
             (color_from_hsv ((float_of_int (b.ind*360)) /. (float_of_int qqty)) 0.9 1.);
-          draw_text (string_of_int b.ind) x y 20 
+          draw_text (string_of_int b.ind) (x+3) (y+3) 20 
           (if is_neight_preced b gamestate.objects then Color.raywhite else Color.black )   ;
       ) ((Player gamestate.player)::gamestate.objects);
     draw_text (Printf.sprintf "Plus que %d s" (gamestate.time/60)) 0 0 24 Color.raywhite;

@@ -36,15 +36,21 @@ type text_env = {
 }
 
 let rec text t font=
-  let rec text_aux cs time =
+  let rec text_aux cs time quick l =
     if Raylib.window_should_close () then Raylib.close_window ();
+    if quick then 
+      let v =  (Raylib.Vector2.create (float_of_int cs.x) (float_of_int cs.y)) in
+      Raylib.draw_text_ex font cs.c v 30. 0.0 Raylib.Color.raywhite
+    else begin 
     Raylib.begin_drawing ();
     let v =  (Raylib.Vector2.create (float_of_int cs.x) (float_of_int cs.y)) in
     (*draw_text_codepoint font (Char.code cs.c) v 30. Color.raywhite;*)
     Raylib.draw_text_ex 
       font  cs.c v 30. 0.0 Raylib.Color.raywhite;
     Raylib.end_drawing ();
-    let state = if Raylib.is_key_pressed Raylib.Key.Space 
+    end;
+
+    let state = if Raylib.is_key_pressed Raylib.Key.Space && not l
       then  Writting else cs.state in
     match state with 
     | Writting ->
@@ -52,20 +58,22 @@ let rec text t font=
             try (
                (* Juste avant on attendais, maintenant on écrit => c'est une nouvelle partie,sur le même in_channel*)
               if cs.state = Waiting then text t font else
-              let triger_newline = cs.x + 2*text_width > w || cs.c = "\n" in
+              let triger_newline = cs.x + text_width > w || cs.c = "\n" in
+              let qq = if Raylib.is_key_pressed Raylib.Key.Space then true else false in
+              let q = if cs.c = "]" then false else quick in
               (if time mod 2 = 0 then let cs' =
                 { 
                   state = if cs.c = "]" then Waiting else state;
                   c = get_char t ;
                   x = if triger_newline then text_width else cs.x+text_width;
                   y = if triger_newline then cs.y + text_height else cs.y;
-                } in text_aux cs' 
-            else text_aux cs) ((time +1) mod 60)) with End_of_file -> () | _ -> ();
+                } in text_aux cs'
+            else text_aux cs) ((time +1) mod 60) (q || qq) (Raylib.is_key_pressed Raylib.Key.Space)) with End_of_file -> () | _ -> ();
             end
-   | Waiting -> text_aux cs ((time+1) mod 60)
+   | Waiting -> text_aux cs ((time+1) mod 60) false (Raylib.is_key_pressed Raylib.Key.Space)
   in
   Raylib.clear_background Raylib.Color.black;
-  text_aux {c="";x=0;y=text_height;state=Writting} 0
+  text_aux {c="";x=0;y=text_height;state=Writting} 0 false false
 
 let () =
   let font =  setup () in 
