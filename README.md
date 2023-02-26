@@ -11,7 +11,7 @@ Lancer `make` pour commencer l'aventure !
 Un bonhomme cherche une boule verte au milieu de boules rouges : on dépoussière la documentation ocaml afin de trouver comment ça fonctionne
 ## Ophélie :black_medium_square:
 Un bonhomme pousse des blocs avec des numéros dessus et il faut les remettre dans l'ordre croissant : on master les algorithmes de tri
-## Marc de Marco :tokyo_tower:
+## Marc :tokyo_tower:
 Tours de Hanoï survival, des blocs tombent sur la tour centrale et on les distribue aux autres tours en respectant les règles des tours de Hanoï : on devient pro des piles
 
 > Pourquoi vichy ? parce qu'on y fait de très bonnes pastilles, et moins un nom a de sens, mieux on le retient
